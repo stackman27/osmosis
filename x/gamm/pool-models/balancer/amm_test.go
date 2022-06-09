@@ -2,9 +2,7 @@ package balancer_test
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -314,11 +312,16 @@ func TestCalcSingleAssetInAndOut_InverseRelationship(t *testing.T) {
 
 				actualSharesOut := balancer.CalcPoolSharesOutGivenSingleAssetIn(
 					initialPoolBalanceOut.ToDec(),
-					initialWeightOut.ToDec().Quo(initialWeightOut.Add(initialWeightIn).ToDec()),
+					initialWeightOut.ToDec().Quo(initialWeightOut.Add(initialWeightIn).ToDec()), // 100 / (100 + 100) = 100/200 = 0.5,
 					initialTotalShares,
 					initialCalcTokenOut.ToDec(),
 					swapFeeDec,
 				)
+
+				// TokenAmountInAfterFee
+				// fee Ration: 1 - ((1 - normalizedTokenWeightOut) * swapFee)
+
+				// 1000 *  (1-((1-0.5) * 0.001))
 
 				inverseCalcTokenOut := balancer.CalcSingleAssetInGivenPoolSharesOut(
 					initialPoolBalanceOut.Add(initialCalcTokenOut).ToDec(),
@@ -363,8 +366,23 @@ func TestCalcJoinPoolShares(t *testing.T) {
 			expectShares: sdk.NewInt(2499999968800),
 			expectLiq:    sdk.NewCoins(sdk.NewInt64Coin("uosmo", 50_000)),
 		},
+
 		{
-			name:    "swap equal weights with zero swap fee",
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t / B_t))^W_t - 1)
+			//
+			// 1_249_999_992_187 = 100 * 10^18 * (( 1 + (25,000 / 1_000_000_000_000))^0.5 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 20,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 1,000,000,000,000
+			//	W_t = normalized weight of deposited asset in pool = 0.5 (equally weighted two-asset pool)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*+10%5E18+*+%28%28+1+%2B+%2825000+%2F+1000000000000%29%29%5E0.5+-+1%29
+			// 	Simplified:  P_issued = 1_249_999_992_187
+
+			name:    "Multi-tokens In: swap equal weights with zero swap fee",
 			swapFee: sdk.MustNewDecFromStr("0"),
 			poolAssets: []balancer.PoolAsset{
 				{
@@ -381,17 +399,30 @@ func TestCalcJoinPoolShares(t *testing.T) {
 				sdk.NewInt64Coin("uatom", 25_000),
 			),
 			expectErr: false,
-			// TODO: Verify expectShares value using manual calculation using the
-			// following as reference:
-			// https://github.com/osmosis-labs/osmosis/blob/6125f81d1ad95c73e03d86c3d5e96ceef3f8c12f/x/gamm/pool-models/balancer/amm_test.go#L348-L357
-			expectShares: sdk.NewInt(2500000000000),
+
+			expectShares: sdk.NewInt(1249999992187 * 2),
 			expectLiq: sdk.NewCoins(
 				sdk.NewInt64Coin("uosmo", 25_000),
 				sdk.NewInt64Coin("uatom", 25_000),
 			),
 		},
 		{
-			name:    "swap equal weights with 0.001 swap fee",
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t * swapFeeRatio  / B_t))^W_t - 1)
+			//
+			// 1_249_374_990_000 = 100 * 10^18 * (( 1 + (50,000 * (1 - (1 - 0.5) * 0.001) / 1_000_000_000_000))^0.5 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 50,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 1,000,000,000,000
+			//	W_t = normalized weight of deposited asset in pool = 0.5 (equally weighted two-asset pool)
+			// 	swapFeeRatio = (1 - (1 - W_t) * swapFee)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*10%5E18*%28%281+%2B+%2850000*%281+-+%281-0.5%29+*+0.01%29%2F1000000000000%29%29%5E0.5+-+1%29
+			// 	Simplified:  P_issued = 1_249_374_990_000
+
+			name:    "Multi-tokens In: swap equal weights with 0.001 swap fee",
 			swapFee: sdk.MustNewDecFromStr("0.001"),
 			poolAssets: []balancer.PoolAsset{
 				{
@@ -408,13 +439,127 @@ func TestCalcJoinPoolShares(t *testing.T) {
 				sdk.NewInt64Coin("uatom", 25_000),
 			),
 			expectErr: false,
-			// TODO: Verify expectShares value using manual calculation using the
-			// following as reference:
-			// https://github.com/osmosis-labs/osmosis/blob/6125f81d1ad95c73e03d86c3d5e96ceef3f8c12f/x/gamm/pool-models/balancer/amm_test.go#L348-L357
-			expectShares: sdk.NewInt(2500000000000),
+
+			expectShares: sdk.NewInt(1249374990000 * 2),
 			expectLiq: sdk.NewCoins(
 				sdk.NewInt64Coin("uosmo", 25_000),
 				sdk.NewInt64Coin("uatom", 25_000),
+			),
+		},
+		{
+			// For uosmos
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t * swapFeeRatio  / B_t))^W_t - 1)
+			//
+			// 1_243_750_000_000 = 100 * 10^18 * (( 1 + (25,000 * (1 - (1 - 0.5) * 0.01) / 1_000_000_000_000))^0.5 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 50,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 1,000,000,000,000
+			//	W_t = normalized weight of deposited asset in pool = 0.5 (equally weighted two-asset pool)
+			// 	swapFeeRatio = (1 - (1 - W_t) * swapFee)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*10%5E18*%28%281+%2B+%282500*%281+-+%281-0.5%29+*+0.01%29%2F1000000000000%29%29%5E0.5+-+1%29
+			// 	Simplified:  P_issued = 1_243_750_000_000
+
+			// For uatom
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t * swapFeeRatio  / B_t))^W_t - 1)
+			//
+			// 2_487_500_000_000 = 100 * 10^18 * (( 1 + (50,000 * (1 - (1 - 0.5) * 0.01) / 1_000_000_000_000))^0.5 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 50,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 1,000,000,000,000
+			//	W_t = normalized weight of deposited asset in pool = 0.5 (equally weighted two-asset pool)
+			// 	swapFeeRatio = (1 - (1 - W_t) * swapFee)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*10%5E18*%28%281+%2B+%2850000*%281+-+%281-0.5%29+*+0.01%29%2F1000000000000%29%29%5E0.5+-+1%29
+			// 	Simplified:  P_issued = 2_487_500_000_000
+
+			name:    "Multi-tokens In: swap unequal amounts, equal weights with 0.01 swap fee",
+			swapFee: sdk.MustNewDecFromStr("0.01"),
+			poolAssets: []balancer.PoolAsset{
+				{
+					Token:  sdk.NewInt64Coin("uosmo", 1_000_000_000_000),
+					Weight: sdk.NewInt(100),
+				},
+				{
+					Token:  sdk.NewInt64Coin("uatom", 1_000_000_000_000),
+					Weight: sdk.NewInt(100),
+				},
+			},
+			tokensIn: sdk.NewCoins(
+				sdk.NewInt64Coin("uosmo", 25_000),
+				sdk.NewInt64Coin("uatom", 50_000),
+			),
+			expectErr: false,
+
+			expectShares: sdk.NewInt(1243750000000 + 2487500000000),
+			expectLiq: sdk.NewCoins(
+				sdk.NewInt64Coin("uosmo", 25_000),
+				sdk.NewInt64Coin("uatom", 50_000),
+			),
+		},
+		{
+			// For uosmo:
+			//
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t * swapFeeRatio  / B_t))^W_t - 1)
+			//
+			// 2_072_912_400_000_000 = 100 * 10^18 * (( 1 + (50,000 * (1 - (1 - 0.83) * 0.03) / 2_000_000_000))^0.83 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 50,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 2_000_000_000
+			//	W_t = normalized weight of deposited asset in pool = 500 / 500 + 100 = 0.83
+			// 	swapFeeRatio = (1 - (1 - W_t) * swapFee)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*10%5E18*%28%281+%2B+%2850000*%281+-+%281-%28500+%2F+%28500+%2B+100%29%29%29+*+0.03%29%2F2000000000%29%29%5E%28500+%2F+%28500+%2B+100%29%29+-+1%29
+			// 	Simplified:  P_issued = 2_072_912_400_000_000
+			//
+			//
+			// For uatom:
+			//
+			// Expected output from Balancer paper (https://balancer.fi/whitepaper.pdf) using equation (25) on page 10:
+			// P_issued = P_supply * ((1 + (A_t * swapFeeRatio  / B_t))^W_t - 1)
+			//
+			// 1_624_999_900_000 = 100 * 10^18 * (( 1 + (100_000 * (1 - (1 - 0.167) * 0.03) / 1_000_000_000_000))^0.167 - 1)
+			//
+			// where:
+			// 	P_supply = initial pool supply = 100 * 10^18 (set at pool creation, same for all new pools)
+			//	A_t = amount of deposited asset = 50,000
+			//	B_t = existing balance of deposited asset in the pool prior to deposit = 1,000,000,000,000
+			//	W_t = normalized weight of deposited asset in pool = 100 / 500 + 100 = 0.167
+			// 	swapFeeRatio = (1 - (1 - W_t) * swapFee)
+			// Plugging all of this in, we get:
+			// 	Full solution: https://www.wolframalpha.com/input?i=100+*10%5E18*%28%281+%2B+%28100000*%281+-+%281-%28100+%2F+%28500+%2B+100%29%29%29+*+0.03%29%2F1000000000000%29%29%5E%28100+%2F+%28500+%2B+100%29%29+-+1%29
+			// 	Simplified:  P_issued = 1_624_999_900_000
+			name:    "Multi-tokens In: swap unequal amounts, with unequal weights with 0.03 swap fee",
+			swapFee: sdk.MustNewDecFromStr("0.03"),
+			poolAssets: []balancer.PoolAsset{
+				{
+					Token:  sdk.NewInt64Coin("uosmo", 2_000_000_000_000),
+					Weight: sdk.NewInt(500),
+				},
+				{
+					Token:  sdk.NewInt64Coin("uatom", 1_000_000_000_000),
+					Weight: sdk.NewInt(100),
+				},
+			},
+			tokensIn: sdk.NewCoins(
+				sdk.NewInt64Coin("uosmo", 50_000),
+				sdk.NewInt64Coin("uatom", 100_000),
+			),
+			expectErr: false,
+
+			expectShares: sdk.NewInt(2072912400000000 + 1624999900000),
+			expectLiq: sdk.NewCoins(
+				sdk.NewInt64Coin("uosmo", 50_000),
+				sdk.NewInt64Coin("uatom", 100_000),
 			),
 		},
 		{
@@ -490,113 +635,5 @@ func TestCalcJoinPoolShares(t *testing.T) {
 				require.Equal(t, tc.expectLiq, liquidity)
 			}
 		})
-	}
-}
-
-func TestRandomizedJoinPoolExitPoolInvariants(t *testing.T) {
-	type testCase struct {
-		initialTokensDenomIn  int64
-		initialTokensDenomOut int64
-
-		percentRatio int64
-
-		numShares sdk.Int
-	}
-
-	const (
-	  denomOut = "denomOut"
-	  denomIn = "denomIn"
-	)
-
-	now := time.Now().Unix()
-	rng := rand.NewSource(now)
-	t.Logf("Using random source of %d\n", now)
-
-	// generate test case with randomized initial assets and join/exit ratio
-	newCase := func() (tc *testCase) {
-		tc = new(testCase)
-		tc.initialTokensDenomIn = rng.Int63() % 1_000_000
-		tc.initialTokensDenomOut = rng.Int63() % 1_000_000
-
-		// 1%~100% of initial assets
-		tc.percentRatio = rng.Int63()%100 + 1
-
-		return tc
-	}
-
-	swapFeeDec, err := sdk.NewDecFromStr("0")
-	require.NoError(t, err)
-
-	exitFeeDec, err := sdk.NewDecFromStr("0")
-	require.NoError(t, err)
-
-	// create pool with randomized initial token amounts
-	// and randomized ratio of join/exit
-	createPool := func(tc *testCase) (pool *balancer.Pool) {
-		poolAssetOut := balancer.PoolAsset{
-			Token:  sdk.NewInt64Coin(denomOut, tc.initialTokensDenomOut),
-			Weight: sdk.NewInt(5),
-		}
-
-		poolAssetIn := balancer.PoolAsset{
-			Token:  sdk.NewInt64Coin(denomIn, tc.initialTokensDenomIn),
-			Weight: sdk.NewInt(5),
-		}
-
-		pool = createTestPool(t, swapFeeDec, exitFeeDec, poolAssetOut, poolAssetIn).(*balancer.Pool)
-		require.NotNil(t, pool)
-
-		return pool
-	}
-
-	// joins with predetermined ratio
-	joinPool := func(pool types.PoolI, tc *testCase) {
-		tokensIn := sdk.Coins{
-			sdk.NewInt64Coin(denomIn, tc.initialTokensDenomIn*tc.percentRatio/100),
-			sdk.NewInt64Coin(denomOut, tc.initialTokensDenomOut*tc.percentRatio/100),
-		}
-		numShares, err := pool.JoinPool(sdk.Context{}, tokensIn, swapFeeDec)
-		require.NoError(t, err)
-		tc.numShares = numShares
-	}
-
-	// exits for same amount of shares minted
-	exitPool := func(pool types.PoolI, tc *testCase) {
-		_, err := pool.ExitPool(sdk.Context{}, tc.numShares, exitFeeDec)
-		require.NoError(t, err)
-	}
-
-	invariantJoinExitInversePreserve := func(
-		beforeCoins, afterCoins sdk.Coins,
-		beforeShares, afterShares sdk.Int,
-	) {
-		// test token amount has been preserved
-		require.True(t,
-			!beforeCoins.IsAnyGT(afterCoins),
-			"Coins has not been preserved before and after join-exit\nbefore:\t%s\nafter:\t%s",
-			beforeCoins, afterCoins,
-		)
-		// test share amount has been preserved
-		require.True(t,
-			beforeShares.Equal(afterShares),
-			"Shares has not been preserved before and after join-exit\nbefore:\t%s\nafter:\t%s",
-			beforeShares, afterShares,
-		)
-	}
-
-	testPoolInvariants := func() {
-		tc := newCase()
-		pool := createPool(tc)
-		originalCoins, originalShares := pool.GetTotalPoolLiquidity(sdk.Context{}), pool.GetTotalShares()
-		joinPool(pool, tc)
-		exitPool(pool, tc)
-		invariantJoinExitInversePreserve(
-			originalCoins, pool.GetTotalPoolLiquidity(sdk.Context{}),
-			originalShares, pool.GetTotalShares(),
-		)
-	}
-
-	for i := 0; i < 1000; i++ {
-		testPoolInvariants()
 	}
 }
