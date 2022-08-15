@@ -23,7 +23,7 @@ OUTPUT=$(go run github.com/osmosis-labs/go-mutesting/cmd/go-mutesting --disable=
 RESULT=$(echo "$OUTPUT" | grep 'The mutation score')
 SCORE=$(echo "$RESULT" | grep -Eo '[[:digit:]]\.[[:digit:]]+')
 
-echo "writing mutation test result to mutation_test_result.txt"
+echo "writing mutation_test_result to mutation_test_result.txt"
 echo "$OUTPUT" > mutation_test_result.txt
 
 echo $RESULT
