@@ -1,8 +1,13 @@
 name: Generate Mutation Test Errors 
 
 on:
-  schedule:
-    - cron: '0 13 * * 1' # Every Monday at 1PM UTC (9AM EST)
+  # for testing 
+  push:
+    branches:
+      - mut-test-gen
+  # for prod 
+    #   schedule:
+    # - cron: '0 13 * * 1' # Every Monday at 1PM UTC (9AM EST)
 
 jobs:
   test:
