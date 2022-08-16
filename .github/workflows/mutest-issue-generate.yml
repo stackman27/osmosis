@@ -42,6 +42,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-${{ matrix.go-version }}-
       -
+        name: Run mutation test
+        continue-on-error: true
+        run: make test-mutation
+      -
         name: Execute mutation test format script
         id: mutest-formatted
         run: |
