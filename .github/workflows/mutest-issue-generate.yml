@@ -61,8 +61,15 @@ jobs:
         run: |
           echo "::set-output name=today::$(date "+%Y/%m/%d")" 
       - 
-        name: Create Issue From File
-        uses: peter-evans/create-issue-from-file@v4
+        name: Read mutation_test_result file
+        id: result
+        uses: juliangruber/read-file-action@v1
         with:
+          path: mutation_test_result.txt
+      -
+        name: Create an issue
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: Mutation test ${{ steps.date.outputs.today }}
-          content-filepath: mutation_test_result.txt 
+          body: ${{steps.result.outputs.content}}
