@@ -46,7 +46,7 @@ jobs:
         continue-on-error: true
         run: make test-mutation
       -
-        name: Execute mutation test format script
+        name: Execute mutation_test_result format script
         id: mutest-formatted
         run: |
           cat mutation_test_result.txt | grep -Ev "PASS" | grep -Ev "SKIP" | tee mutation_test_result.txt
