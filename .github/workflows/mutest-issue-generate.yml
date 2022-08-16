@@ -19,7 +19,7 @@ jobs:
       -
         name: Run mutation test
         continue-on-error: true
-        run: make test-mutation
+        run: make -n test-mutation
       -
         name: Execute mutation test format script
         id: mutest-formatted
