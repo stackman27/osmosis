@@ -67,7 +67,7 @@ jobs:
         with:
           path: go_mutation_test_result.txt
       - 
-        name: Create an issue
+        name: Create an mutation test output issue
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
