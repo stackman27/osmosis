@@ -54,7 +54,7 @@ jobs:
         name: Generate code blocks 
         id: gen-code-blocks
         run: |
-          cat mutation_test_result.txt  | sed "s# @@# @@\n\`\`\`go\n#g " | sed "s#FAIL#\`\`\`\nFAIL\n\n\n#g " > mutation_test_result.txt 
+          cat mutation_test_result.txt  | sed "s# @@# @@\n\`\`\`go\n#g " | sed "s#FAIL#\`\`\`\nFAIL\n\n\n#g " > go_mutation_test_result.txt 
       -
         name: Get today's date
         id: date
@@ -65,11 +65,8 @@ jobs:
         id: result
         uses: juliangruber/read-file-action@v1
         with:
-          path: mutation_test_result.txt
+          path: go_mutation_test_result.txt
       - 
-        name: Echo mutation test result
-        run: echo "${{ steps.result.outputs.content }}"
-      -
         name: Create an issue
         uses: dacbd/create-issue-action@main
         with:
