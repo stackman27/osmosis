@@ -54,21 +54,16 @@ jobs:
         name: Generate code blocks 
         id: gen-code-blocks
         run: |
-          cat mutation_test_result.txt  | sed "s# @@# @@\n\`\`\`go\n#g " | sed "s#FAIL#\`\`\`\nFAIL\n\n\n#g " > mutation_test_result.txt 
+          cat mutation_test_result.txt  | sed "s# @@# @@\n\`\`\`go\n#g " | sed "s#FAIL#\`\`\`\nFAIL\n\n\n#g " > tee mutation_test_result.txt 
       -
         name: Get today's date
         id: date
         run: |
           echo "::set-output name=today::$(date "+%Y/%m/%d")" 
-      - 
-        name: Read mutation_test_result file
-        id: result
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: mutation_test_result.txt
       -
-        name: Create Issue From mutation_test_result file
-        uses: peter-evans/create-issue-from-file@v4
+        name: Create an issue
+        uses: dacbd/create-issue-action@main
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           title: Mutation test ${{ steps.date.outputs.today }}
-          content-filepath: mutation_test_result.txt
+          body: ${{steps.gen-code-blocks.outputs.content}}
