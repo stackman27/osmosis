@@ -152,13 +152,13 @@ func (s *TestSuite) TestGetArithmeticTwap() {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime, baseTime.Add(30*time.Second), quoteAssetA),
-			expTwap:      sdk.NewDecWithPrec(475, 2), // (10 * (5s - 0s) + 5 * (10s - 5s) + 2 * (20s - 10s)) / (20s - 0s)
+			expTwap:      sdk.NewDecWithPrec(475, 2), // (10 * (5s - 0s) + 5 * (10s - 5s) + 2 * (20s - 10s)) / (20s - 0s) = 4.75, ACTUAL = 5.66
 		},
 		"(3 record) start exact, end after third record, sp1": {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime, baseTime.Add(20*time.Second), quoteAssetB),
-			expTwap:      sdk.NewDecWithPrec(325, 3), // (.1 * (5s - 0s) + .2 * (10s - 5s) + .5 * (20s - 10s)) / (20s - 0s)
+			expTwap:      sdk.NewDecWithPrec(325, 3), // (.1 * (5s - 0s) + .2 * (10s - 5s) + .5 * (20s - 10s)) / (20s - 0s) = 0.325, ACTUAL = 0.15
 		},
 
 		// error catching
