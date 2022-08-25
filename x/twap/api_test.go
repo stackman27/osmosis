@@ -153,13 +153,13 @@ func (s *TestSuite) TestGetArithmeticTwap() {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime, baseTime.Add(20*time.Second), quoteAssetA),
-			expTwap:      sdk.NewDecWithPrec(75, 1), // 10 for 10s, 5 for 10s
+			expTwap:      sdk.NewDecWithPrec(75, 1), // (10 * (10s - 0s) +  5 * (20s - 10s)) / (20s - 0s)
 		},
 		"(2 record) start exact, end after second record, sp1": {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime, baseTime.Add(20*time.Second), quoteAssetB),
-			expTwap:      sdk.NewDecWithPrec(15, 2), // .1 for 10s, .2 for 10s
+			expTwap:      sdk.NewDecWithPrec(15, 2), // (.1 * (10s - 0s) +  .2 * (20s - 10s)) / (20s - 0s)
 		},
 		// start at 5 second after first twap record, end at 5 second after second twap record
 		"(2 record) start and end interpolated": {
@@ -186,27 +186,39 @@ func (s *TestSuite) TestGetArithmeticTwap() {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime.Add(10*time.Second), baseTime.Add(30*time.Second), quoteAssetA),
-			expTwap:      sdk.NewDecWithPrec(35, 1), // 5 for 10s, 2 for 10s
+			expTwap:      sdk.NewDecWithPrec(35, 1), // (5 * (20s - 10s) + 2 * (30s - 20s)) / (30s - 10s)
 		},
 		"(3 record) start at second record, end after third record, sp1": {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime.Add(10*time.Second), baseTime.Add(30*time.Second), quoteAssetB),
-			expTwap:      sdk.NewDecWithPrec(35, 2), // 0.2 for 10s, 0.5 for 10s
+			expTwap:      sdk.NewDecWithPrec(35, 2), // (.2 * (20s - 10s) + 0.5 (30s - 20s)) / (30s - 10s)
 		},
 		// start in middle of first and second record, end in middle of second and third record
 		"(3 record) interpolate: in between second and third record": {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime.Add(15*time.Second), baseTime.Add(25*time.Second), quoteAssetA),
-			expTwap:      sdk.NewDecWithPrec(35, 1), // 5 for 5s, 2 for 5 = 35 / 10 = 3.5
+			expTwap:      sdk.NewDecWithPrec(35, 1), // (5 * (20s - 15s) + 2 * (30s - 25s)) / (25s - 15s)
 		},
 		// interpolate in time closer to second record
 		"(3 record) interpolate: get twap closer to second record": {
 			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
 			ctxTime:      baseTime.Add(time.Minute),
 			input:        makeSimpleTwapInput(baseTime.Add(15*time.Second), baseTime.Add(30*time.Second), quoteAssetA),
-			expTwap:      sdk.NewDec(3), // 5 for 5s, 2 for 10s = 45 / 15 = 3
+			expTwap:      sdk.NewDec(3), // (5 * (20s - 15s) + 2 * (30s - 20s)) / (30s - 15s)
+		},
+		"(3 record) start exact, end after third record": {
+			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
+			ctxTime:      baseTime.Add(time.Minute),
+			input:        makeSimpleTwapInput(baseTime, baseTime.Add(30*time.Second), quoteAssetA),
+			expTwap:      sdk.NewDecWithPrec(566, 2), // (10 * (10s - 0s) + 5 * (20s - 10s) + 2 * (30s - 20s)) / (30s - 0s)
+		},
+		"(3 record) start exact, end after third record, sp1": {
+			recordsToSet: []types.TwapRecord{baseRecord, tPlus10sp5Record, tPlus20sp2Record},
+			ctxTime:      baseTime.Add(time.Minute),
+			input:        makeSimpleTwapInput(baseTime, baseTime.Add(30*time.Second), quoteAssetB),
+			expTwap:      sdk.NewDecWithPrec(266, 3), // (.1 * (10s - 0s) + .2 * (20s - 10s) + .5 * (30s - 20s)) / (30s - 0s)
 		},
 
 		// error catching
