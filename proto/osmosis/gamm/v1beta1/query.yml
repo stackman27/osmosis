@@ -1,0 +1,6 @@
+keeper:
+  path: ""
+  struct: "Keeper"
+client_path: "github.com/osmosis-labs/osmosis/v11/x/gamm/client"
+queries: 
+  
