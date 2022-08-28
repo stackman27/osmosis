@@ -1,6 +1,79 @@
 keeper:
-  path: ""
+  path: "github.com/osmosis-labs/osmosis/v11/x/gamm"
   struct: "Keeper"
 client_path: "github.com/osmosis-labs/osmosis/v11/x/gamm/client"
-queries: 
+queries:
+  Pool:
+    proto_wrapper:
+      default_values:
+        Req.poolId: "1"
+      query_func: "k.Pool"
+    cli:
+      cmd: "pool"
   
+  Pools:
+    proto_wrapper:
+      query_func: "k.Pools"
+    cli:
+      cmd: "pools"
+
+  NumPools:
+    proto_wrapper:
+      query_func: "k.NumPools"
+    cli:
+      cmd: "num-pools"
+
+  PoolParams:
+    proto_wrapper:
+      default_values:
+        Req.poolId: "1"
+      query_func: "k.PoolParams"
+    cli:
+      cmd: "pool-params"
+
+  TotalPoolLiquidity:
+    proto_wrapper:
+      default_values:
+        Req.poolId: "1"
+      query_func: "k.TotalPoolLiquidity"
+    cli:
+      cmd: "total-pool-liquidity"
+  
+  TotalShares:
+    proto_wrapper:
+      default_values:
+        Req.poolId: "1"
+      query_func: "k.TotalShares"
+    cli:
+      cmd: "total-share"
+
+  SpotPrice:
+    proto_wrapper:
+      default_values:
+        Req.poolId: "1"
+        BaseAssetDenom: "uatom"
+        QuoteAssetDenom: "uosmo"
+      query_func: "k.SpotPrice"
+    cli:
+      cmd: "spot-price"
+
+  TotalLiquidity:
+    proto_wrapper:
+      query_func: "k.TotalLiquidity"
+    cli:
+      cmd: "total-liquidity"
+
+  EstimateSwapExactAmountIn:
+    proto_wrapper:
+      query_func: "k.EstimateSwapExactAmountIn"
+    cli:
+      cmd: "estimate-swap-exact-amount-in"
+
+  EstimateSwapExactAmountOut:
+    proto_wrapper:
+      query_func: "k.EstimateSwapExactAmountOut"
+    cli:
+      cmd: "estimate-swap-exact-amount-out"
+
+
+

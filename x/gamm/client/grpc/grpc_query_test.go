@@ -1,15 +1,33 @@
-package keeper_test
+package grpc
 
 import (
 	gocontext "context"
+	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/stretchr/testify/suite"
 
+	"github.com/osmosis-labs/osmosis/v11/app/apptesting"
 	"github.com/osmosis-labs/osmosis/v11/x/gamm/types"
 )
 
-func (suite *KeeperTestSuite) TestQueryPool() {
+type GrpcTestSuite struct {
+	apptesting.KeeperTestHelper
+	gammKeeper *gamm.Keeper
+}
+
+func TestGrpcSuiteRun(t *testing.T) {
+	suite.Run(t, new(GrpcTestSuite))
+}
+
+func (s *GrpcTestSuite) SetupTest() {
+	s.Setup()
+	s.gammKeeper = s.App.GammKeeper
+	s.Ctx = s.Ctx.WithBlockTime(baseTime)
+}
+
+func (suite *GrpcTestSuite) TestQueryPool() {
 	queryClient := suite.queryClient
 
 	// Invalid param
@@ -36,7 +54,7 @@ func (suite *KeeperTestSuite) TestQueryPool() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestQueryPools() {
+func (suite *GrpcTestSuite) TestQueryPools() {
 	queryClient := suite.queryClient
 
 	for i := 0; i < 10; i++ {
@@ -87,13 +105,13 @@ func (suite *KeeperTestSuite) TestQueryPools() {
 	}
 }
 
-func (suite *KeeperTestSuite) TestQueryNumPools1() {
+func (suite *GrpcTestSuite) TestQueryNumPools1() {
 	res, err := suite.queryClient.NumPools(gocontext.Background(), &types.QueryNumPoolsRequest{})
 	suite.Require().NoError(err)
 	suite.Require().Equal(uint64(0), res.NumPools)
 }
 
-func (suite *KeeperTestSuite) TestQueryNumPools2() {
+func (suite *GrpcTestSuite) TestQueryNumPools2() {
 	for i := 0; i < 10; i++ {
 		suite.PrepareBalancerPool()
 	}
@@ -103,7 +121,7 @@ func (suite *KeeperTestSuite) TestQueryNumPools2() {
 	suite.Require().Equal(uint64(10), res.NumPools)
 }
 
-func (suite *KeeperTestSuite) TestQueryTotalPoolLiquidity() {
+func (suite *GrpcTestSuite) TestQueryTotalPoolLiquidity() {
 	queryClient := suite.queryClient
 
 	// Pool not exist
@@ -118,7 +136,7 @@ func (suite *KeeperTestSuite) TestQueryTotalPoolLiquidity() {
 	suite.Require().Equal(res.Liquidity, expectedCoins)
 }
 
-func (suite *KeeperTestSuite) TestQueryTotalShares() {
+func (suite *GrpcTestSuite) TestQueryTotalShares() {
 	queryClient := suite.queryClient
 
 	// Pool not exist
@@ -145,7 +163,7 @@ func (suite *KeeperTestSuite) TestQueryTotalShares() {
 	// suite.Require().Equal(types.InitPoolSharesSupply.Add(types.OneShare.MulRaw(10)).String(), res.TotalShares.Amount.String())
 }
 
-func (suite *KeeperTestSuite) TestQueryBalancerPoolTotalLiquidity() {
+func (suite *GrpcTestSuite) TestQueryBalancerPoolTotalLiquidity() {
 	queryClient := suite.queryClient
 
 	// Pool not exist
@@ -200,7 +218,7 @@ func (suite *KeeperTestSuite) TestQueryBalancerPoolTotalLiquidity() {
 // 	suite.Require().Equal("5000000foo", PoolAssets[2].Token.String())
 // }
 
-func (suite *KeeperTestSuite) TestQueryBalancerPoolSpotPrice() {
+func (suite *GrpcTestSuite) TestQueryBalancerPoolSpotPrice() {
 	queryClient := suite.queryClient
 	poolID := suite.PrepareBalancerPool()
 
