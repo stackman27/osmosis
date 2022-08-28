@@ -8,9 +8,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	gamm "github.com/osmosis-labs/osmosis/v11/x/gamm/keeper"
 	"github.com/osmosis-labs/osmosis/v11/x/gamm/client/queryproto"
+	gammKeeper "github.com/osmosis-labs/osmosis/v11/x/gamm/keeper"
 	"github.com/osmosis-labs/osmosis/v11/x/gamm/pool-models/balancer"
 
 	"github.com/osmosis-labs/osmosis/v11/x/gamm/types"
@@ -25,7 +26,7 @@ var sdkIntMaxValue = sdk.NewInt(0)
 // Querier defines a wrapper around the x/gamm keeper providing gRPC method
 // handlers.
 type Querier struct {
-	Keeper gamm.Keeper
+	Keeper gammKeeper.Keeper
 }
 
 // Pool checks if a pool exists and their respective poolWeights.
@@ -55,7 +56,7 @@ func (q Querier) Pools(
 ) (*queryproto.QueryPoolsResponse, error) {
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	store := sdkCtx.KVStore(q.Keeper.storeKey)
+	store := sdkCtx.KVStore(q.Keeper.StoreKey)
 	poolStore := prefix.NewStore(store, types.KeyPrefixPools)
 
 	var anys []*codectypes.Any
