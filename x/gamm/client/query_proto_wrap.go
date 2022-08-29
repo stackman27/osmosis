@@ -1,7 +1,6 @@
 package client
 
 import (
-	"context"
 	"fmt"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -30,11 +29,9 @@ type Querier struct {
 }
 
 // Pool checks if a pool exists and their respective poolWeights.
-func (q Querier) Pool(ctx context.Context,
+func (q Querier) Pool(sdkCtx sdk.Context,
 	req queryproto.QueryPoolRequest,
 ) (*queryproto.QueryPoolResponse, error) {
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	pool, err := q.Keeper.GetPoolAndPoke(sdkCtx, req.PoolId)
 	if err != nil {
@@ -51,11 +48,10 @@ func (q Querier) Pool(ctx context.Context,
 
 // Pools checks existence of multiple pools and their poolWeights
 func (q Querier) Pools(
-	ctx context.Context,
-	req *queryproto.QueryPoolsRequest,
+	sdkCtx sdk.Context,
+	req queryproto.QueryPoolsRequest,
 ) (*queryproto.QueryPoolsResponse, error) {
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(q.Keeper.StoreKey)
 	poolStore := prefix.NewStore(store, types.KeyPrefixPools)
 
@@ -97,8 +93,7 @@ func (q Querier) Pools(
 }
 
 // NumPools returns total number of pools.
-func (q Querier) NumPools(ctx context.Context, _ *queryproto.QueryNumPoolsRequest) (*queryproto.QueryNumPoolsResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+func (q Querier) NumPools(sdkCtx sdk.Context, _ queryproto.QueryNumPoolsRequest) (*queryproto.QueryNumPoolsResponse, error) {
 
 	return &queryproto.QueryNumPoolsResponse{
 		NumPools: q.Keeper.GetNextPoolId(sdkCtx) - 1,
@@ -106,8 +101,7 @@ func (q Querier) NumPools(ctx context.Context, _ *queryproto.QueryNumPoolsReques
 }
 
 // PoolParams queries a specified pool for its params.
-func (q Querier) PoolParams(ctx context.Context, req *queryproto.QueryPoolParamsRequest) (*queryproto.QueryPoolParamsResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+func (q Querier) PoolParams(sdkCtx sdk.Context, req queryproto.QueryPoolParamsRequest) (*queryproto.QueryPoolParamsResponse, error) {
 
 	pool, err := q.Keeper.GetPoolAndPoke(sdkCtx, req.PoolId)
 	if err != nil {
@@ -132,8 +126,7 @@ func (q Querier) PoolParams(ctx context.Context, req *queryproto.QueryPoolParams
 }
 
 // TotalPoolLiquidity returns total liquidity in pool.
-func (q Querier) TotalPoolLiquidity(ctx context.Context, req *queryproto.QueryTotalPoolLiquidityRequest) (*queryproto.QueryTotalPoolLiquidityResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+func (q Querier) TotalPoolLiquidity(sdkCtx sdk.Context, req queryproto.QueryTotalPoolLiquidityRequest) (*queryproto.QueryTotalPoolLiquidityResponse, error) {
 
 	pool, err := q.Keeper.GetPoolAndPoke(sdkCtx, req.PoolId)
 	if err != nil {
@@ -146,12 +139,7 @@ func (q Querier) TotalPoolLiquidity(ctx context.Context, req *queryproto.QueryTo
 }
 
 // TotalShares returns total pool shares.
-func (q Querier) TotalShares(ctx context.Context, req *queryproto.QueryTotalSharesRequest) (*queryproto.QueryTotalSharesResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+func (q Querier) TotalShares(sdkCtx sdk.Context, req queryproto.QueryTotalSharesRequest) (*queryproto.QueryTotalSharesResponse, error) {
 
 	pool, err := q.Keeper.GetPoolAndPoke(sdkCtx, req.PoolId)
 	if err != nil {
@@ -166,7 +154,7 @@ func (q Querier) TotalShares(ctx context.Context, req *queryproto.QueryTotalShar
 }
 
 // SpotPrice returns target pool asset prices on base and quote assets.
-func (q Querier) SpotPrice(ctx context.Context, req *queryproto.QuerySpotPriceRequest) (*queryproto.QuerySpotPriceResponse, error) {
+func (q Querier) SpotPrice(sdkCtx sdk.Context, req queryproto.QuerySpotPriceRequest) (*queryproto.QuerySpotPriceResponse, error) {
 	if req.BaseAssetDenom == "" {
 		return nil, status.Error(codes.InvalidArgument, "invalid base asset denom")
 	}
@@ -174,8 +162,6 @@ func (q Querier) SpotPrice(ctx context.Context, req *queryproto.QuerySpotPriceRe
 	if req.QuoteAssetDenom == "" {
 		return nil, status.Error(codes.InvalidArgument, "invalid quote asset denom")
 	}
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	pool, err := q.Keeper.GetPoolAndPoke(sdkCtx, req.PoolId)
 	if err != nil {
@@ -193,19 +179,14 @@ func (q Querier) SpotPrice(ctx context.Context, req *queryproto.QuerySpotPriceRe
 }
 
 // TotalLiquidity returns total liquidity across all pools.
-func (q Querier) TotalLiquidity(ctx context.Context, _ *queryproto.QueryTotalLiquidityRequest) (*queryproto.QueryTotalLiquidityResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
+func (q Querier) TotalLiquidity(sdkCtx sdk.Context, _ queryproto.QueryTotalLiquidityRequest) (*queryproto.QueryTotalLiquidityResponse, error) {
 	return &queryproto.QueryTotalLiquidityResponse{
 		Liquidity: q.Keeper.GetTotalLiquidity(sdkCtx),
 	}, nil
 }
 
 // EstimateSwapExactAmountIn estimates input token amount for a swap.
-func (q Querier) EstimateSwapExactAmountIn(ctx context.Context, req *queryproto.QuerySwapExactAmountInRequest) (*queryproto.QuerySwapExactAmountInResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
+func (q Querier) EstimateSwapExactAmountIn(sdkCtx sdk.Context, req queryproto.QuerySwapExactAmountInRequest) (*queryproto.QuerySwapExactAmountInResponse, error) {
 
 	if req.Sender == "" {
 		return nil, status.Error(codes.InvalidArgument, "address cannot be empty")
@@ -229,8 +210,6 @@ func (q Querier) EstimateSwapExactAmountIn(ctx context.Context, req *queryproto.
 		return nil, status.Errorf(codes.InvalidArgument, "invalid token: %s", err.Error())
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
 	tokenOutAmount, err := q.Keeper.MultihopSwapExactAmountIn(sdkCtx, sender, req.Routes, tokenIn, sdk.NewInt(1))
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -242,10 +221,7 @@ func (q Querier) EstimateSwapExactAmountIn(ctx context.Context, req *queryproto.
 }
 
 // EstimateSwapExactAmountOut estimates token output amount for a swap.
-func (q Querier) EstimateSwapExactAmountOut(ctx context.Context, req *queryproto.QuerySwapExactAmountOutRequest) (*queryproto.QuerySwapExactAmountOutResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
+func (q Querier) EstimateSwapExactAmountOut(sdkCtx sdk.Context, req queryproto.QuerySwapExactAmountOutRequest) (*queryproto.QuerySwapExactAmountOutResponse, error) {
 
 	if req.Sender == "" {
 		return nil, status.Error(codes.InvalidArgument, "address cannot be empty")
@@ -268,8 +244,6 @@ func (q Querier) EstimateSwapExactAmountOut(ctx context.Context, req *queryproto
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid token: %s", err.Error())
 	}
-
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	tokenInAmount, err := q.Keeper.MultihopSwapExactAmountOut(sdkCtx, sender, req.Routes, sdkIntMaxValue, tokenOut)
 	if err != nil {

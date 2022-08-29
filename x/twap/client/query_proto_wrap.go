@@ -16,8 +16,8 @@ type Querier struct {
 }
 
 func (q Querier) GetArithmeticTwap(ctx sdk.Context,
-	req queryproto.GetArithmeticTwapRequest,
-) (*queryproto.GetArithmeticTwapResponse, error) {
+	req queryproto.QueryGetArithmeticTwapRequest,
+) (*queryproto.QueryGetArithmeticTwapResponse, error) {
 	if (req.EndTime == nil || *req.EndTime == time.Time{}) {
 		*req.EndTime = time.Now()
 	}
@@ -26,5 +26,5 @@ func (q Querier) GetArithmeticTwap(ctx sdk.Context,
 	if err != nil {
 		return nil, err
 	}
-	return &queryproto.GetArithmeticTwapResponse{ArithmeticTwap: twap}, nil
+	return &queryproto.QueryGetArithmeticTwapResponse{ArithmeticTwap: twap}, nil
 }

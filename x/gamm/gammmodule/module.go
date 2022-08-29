@@ -107,7 +107,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(&am.keeper))
 	balancer.RegisterMsgServer(cfg.MsgServer(), keeper.NewBalancerMsgServerImpl(&am.keeper))
 	// stableswap.RegisterMsgServer(cfg.MsgServer(), keeper.NewStableswapMsgServerImpl(&am.keeper))
-	queryproto.RegisterQueryServer(cfg.QueryServer(), grpc.Querier{Q: gammclient.Querier{K: am.k}})
+	queryproto.RegisterQueryServer(cfg.QueryServer(), grpc.Querier{Q: gammclient.Querier{Keeper: am.keeper}})
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,

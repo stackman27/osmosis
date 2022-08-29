@@ -74,6 +74,3 @@ queries:
       query_func: "k.EstimateSwapExactAmountOut"
     cli:
       cmd: "estimate-swap-exact-amount-out"
-
-
-

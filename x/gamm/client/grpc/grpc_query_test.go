@@ -14,7 +14,7 @@ import (
 
 type GrpcTestSuite struct {
 	apptesting.KeeperTestHelper
-	gammKeeper *gamm.Keeper
+	queryClient types.QueryClient
 }
 
 func TestGrpcSuiteRun(t *testing.T) {
@@ -23,8 +23,7 @@ func TestGrpcSuiteRun(t *testing.T) {
 
 func (s *GrpcTestSuite) SetupTest() {
 	s.Setup()
-	s.gammKeeper = s.App.GammKeeper
-	s.Ctx = s.Ctx.WithBlockTime(baseTime)
+	s.queryClient = types.NewQueryClient(s.QueryHelper)
 }
 
 func (suite *GrpcTestSuite) TestQueryPool() {
