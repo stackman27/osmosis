@@ -1,4 +1,4 @@
-package grpc
+package grpc 
 
 // THIS FILE IS GENERATED CODE, DO NOT EDIT
 // SOURCE AT `proto/osmosis/gamm/v1beta1/query.yml`
@@ -20,6 +20,51 @@ type Querier struct {
 
 var _ queryproto.QueryServer = Querier{}
 
+func (q Querier) Pool(grpcCtx context.Context,
+	req *queryproto.QueryPoolRequest,
+) (*queryproto.QueryPoolResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(grpcCtx)
+	return q.Q.Pool(ctx, *req)
+}
+func (q Querier) PoolParams(grpcCtx context.Context,
+	req *queryproto.QueryPoolParamsRequest,
+) (*queryproto.QueryPoolParamsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(grpcCtx)
+	return q.Q.PoolParams(ctx, *req)
+}
+func (q Querier) TotalShares(grpcCtx context.Context,
+	req *queryproto.QueryTotalSharesRequest,
+) (*queryproto.QueryTotalSharesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(grpcCtx)
+	return q.Q.TotalShares(ctx, *req)
+}
+func (q Querier) EstimateSwapExactAmountIn(grpcCtx context.Context,
+	req *queryproto.QueryEstimateSwapExactAmountInRequest,
+) (*queryproto.QueryEstimateSwapExactAmountInResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(grpcCtx)
+	return q.Q.EstimateSwapExactAmountIn(ctx, *req)
+}
+func (q Querier) EstimateSwapExactAmountOut(grpcCtx context.Context,
+	req *queryproto.QueryEstimateSwapExactAmountOutRequest,
+) (*queryproto.QueryEstimateSwapExactAmountOutResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(grpcCtx)
+	return q.Q.EstimateSwapExactAmountOut(ctx, *req)
+}
 func (q Querier) Pools(grpcCtx context.Context,
 	req *queryproto.QueryPoolsRequest,
 ) (*queryproto.QueryPoolsResponse, error) {
@@ -38,15 +83,6 @@ func (q Querier) NumPools(grpcCtx context.Context,
 	ctx := sdk.UnwrapSDKContext(grpcCtx)
 	return q.Q.NumPools(ctx, *req)
 }
-func (q Querier) PoolParams(grpcCtx context.Context,
-	req *queryproto.QueryPoolParamsRequest,
-) (*queryproto.QueryPoolParamsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.PoolParams(ctx, *req)
-}
 func (q Querier) TotalPoolLiquidity(grpcCtx context.Context,
 	req *queryproto.QueryTotalPoolLiquidityRequest,
 ) (*queryproto.QueryTotalPoolLiquidityResponse, error) {
@@ -55,42 +91,6 @@ func (q Querier) TotalPoolLiquidity(grpcCtx context.Context,
 	}
 	ctx := sdk.UnwrapSDKContext(grpcCtx)
 	return q.Q.TotalPoolLiquidity(ctx, *req)
-}
-func (q Querier) EstimateSwapExactAmountIn(grpcCtx context.Context,
-	req *queryproto.QuerySwapExactAmountInRequest,
-) (*queryproto.QuerySwapExactAmountInResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.EstimateSwapExactAmountIn(ctx, *req)
-}
-func (q Querier) EstimateSwapExactAmountOut(grpcCtx context.Context,
-	req *queryproto.QuerySwapExactAmountOutRequest,
-) (*queryproto.QuerySwapExactAmountOutResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.EstimateSwapExactAmountOut(ctx, *req)
-}
-func (q Querier) Pool(grpcCtx context.Context,
-	req *queryproto.QueryPoolRequest,
-) (*queryproto.QueryPoolResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.Pool(ctx, *req)
-}
-func (q Querier) TotalShares(grpcCtx context.Context,
-	req *queryproto.QueryTotalSharesRequest,
-) (*queryproto.QueryTotalSharesResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.TotalShares(ctx, *req)
 }
 func (q Querier) SpotPrice(grpcCtx context.Context,
 	req *queryproto.QuerySpotPriceRequest,

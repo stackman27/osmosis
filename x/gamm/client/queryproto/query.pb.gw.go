@@ -398,7 +398,7 @@ var (
 )
 
 func request_Query_EstimateSwapExactAmountIn_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySwapExactAmountInRequest
+	var protoReq QueryEstimateSwapExactAmountInRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -432,7 +432,7 @@ func request_Query_EstimateSwapExactAmountIn_0(ctx context.Context, marshaler ru
 }
 
 func local_request_Query_EstimateSwapExactAmountIn_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySwapExactAmountInRequest
+	var protoReq QueryEstimateSwapExactAmountInRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -470,7 +470,7 @@ var (
 )
 
 func request_Query_EstimateSwapExactAmountOut_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySwapExactAmountOutRequest
+	var protoReq QueryEstimateSwapExactAmountOutRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -504,7 +504,7 @@ func request_Query_EstimateSwapExactAmountOut_0(ctx context.Context, marshaler r
 }
 
 func local_request_Query_EstimateSwapExactAmountOut_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QuerySwapExactAmountOutRequest
+	var protoReq QueryEstimateSwapExactAmountOutRequest
 	var metadata runtime.ServerMetadata
 
 	var (

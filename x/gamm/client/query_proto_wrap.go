@@ -186,7 +186,7 @@ func (q Querier) TotalLiquidity(sdkCtx sdk.Context, _ queryproto.QueryTotalLiqui
 }
 
 // EstimateSwapExactAmountIn estimates input token amount for a swap.
-func (q Querier) EstimateSwapExactAmountIn(sdkCtx sdk.Context, req queryproto.QuerySwapExactAmountInRequest) (*queryproto.QuerySwapExactAmountInResponse, error) {
+func (q Querier) EstimateSwapExactAmountIn(sdkCtx sdk.Context, req queryproto.QueryEstimateSwapExactAmountInRequest) (*queryproto.QueryEstimateSwapExactAmountInResponse, error) {
 
 	if req.Sender == "" {
 		return nil, status.Error(codes.InvalidArgument, "address cannot be empty")
@@ -215,13 +215,13 @@ func (q Querier) EstimateSwapExactAmountIn(sdkCtx sdk.Context, req queryproto.Qu
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &queryproto.QuerySwapExactAmountInResponse{
+	return &queryproto.QueryEstimateSwapExactAmountInResponse{
 		TokenOutAmount: tokenOutAmount,
 	}, nil
 }
 
 // EstimateSwapExactAmountOut estimates token output amount for a swap.
-func (q Querier) EstimateSwapExactAmountOut(sdkCtx sdk.Context, req queryproto.QuerySwapExactAmountOutRequest) (*queryproto.QuerySwapExactAmountOutResponse, error) {
+func (q Querier) EstimateSwapExactAmountOut(sdkCtx sdk.Context, req queryproto.QueryEstimateSwapExactAmountOutRequest) (*queryproto.QueryEstimateSwapExactAmountOutResponse, error) {
 
 	if req.Sender == "" {
 		return nil, status.Error(codes.InvalidArgument, "address cannot be empty")
@@ -250,7 +250,7 @@ func (q Querier) EstimateSwapExactAmountOut(sdkCtx sdk.Context, req queryproto.Q
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &queryproto.QuerySwapExactAmountOutResponse{
+	return &queryproto.QueryEstimateSwapExactAmountOutResponse{
 		TokenInAmount: tokenInAmount,
 	}, nil
 }
