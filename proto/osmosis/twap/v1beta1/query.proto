@@ -14,13 +14,13 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/osmosis-labs/osmosis/v11/x/twap/client/queryproto";
 
 service Query {
-  rpc GetArithmeticTwap(QueryGetArithmeticTwapRequest)
-      returns (QueryGetArithmeticTwapResponse) {
+  rpc GetArithmeticTwap(GetArithmeticTwapRequest)
+      returns (GetArithmeticTwapResponse) {
     option (google.api.http).get = "/osmosis/gamm/v1beta1/pools";
   }
 }
 
-message QueryGetArithmeticTwapRequest {
+message GetArithmeticTwapRequest {
   uint64 pool_id = 1;
   string base_asset = 2;
   string quote_asset = 3;
@@ -35,7 +35,7 @@ message QueryGetArithmeticTwapRequest {
     (gogoproto.moretags) = "yaml:\"end_time\""
   ];
 }
-message QueryGetArithmeticTwapResponse {
+message GetArithmeticTwapResponse {
   string arithmetic_twap = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"arithmetic_twap\"",

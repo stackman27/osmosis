@@ -21,8 +21,8 @@ type Querier struct {
 var _ queryproto.QueryServer = Querier{}
 
 func (q Querier) Pool(grpcCtx context.Context,
-	req *queryproto.PoolRequest,
-) (*queryproto.PoolResponse, error) {
+	req *queryproto.QueryPoolRequest,
+) (*queryproto.QueryPoolResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}

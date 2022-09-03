@@ -7,7 +7,8 @@ queries:
     proto_wrapper:
       default_values:
         Req.poolId: "1"
-      query_func: "k.QueryPool"
+      query_func: "k.Pool"
+      query_prefix: true # this checks if the query message starts with `Query` prefix 
     cli:
       cmd: "pool"
   

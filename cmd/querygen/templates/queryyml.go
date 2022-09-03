@@ -33,6 +33,7 @@ type YmlQueryDescriptor struct {
 type ProtoWrapperDescriptor struct {
 	DefaultValues map[string]string `yaml:"default_values"`
 	QueryFunc     string            `yaml:"query_func"`
+	QueryPrefix   bool              `yaml:"query_prefix"`
 	Response      string
 }
 
