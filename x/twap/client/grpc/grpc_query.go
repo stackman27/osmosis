@@ -21,8 +21,8 @@ type Querier struct {
 var _ queryproto.QueryServer = Querier{}
 
 func (q Querier) GetArithmeticTwap(grpcCtx context.Context,
-	req *queryproto.QueryGetArithmeticTwapRequest,
-) (*queryproto.QueryGetArithmeticTwapResponse, error) {
+	req *queryproto.GetArithmeticTwapRequest,
+) (*queryproto.GetArithmeticTwapResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}

@@ -7,70 +7,70 @@ queries:
     proto_wrapper:
       default_values:
         Req.poolId: "1"
-      query_func: "k.Pool"
+      query_func: "k.QueryPool"
     cli:
       cmd: "pool"
   
-  Pools:
-    proto_wrapper:
-      query_func: "k.Pools"
-    cli:
-      cmd: "pools"
+  # Pools:
+  #   proto_wrapper:
+  #     query_func: "k.Pools"
+  #   cli:
+  #     cmd: "pools"
 
-  NumPools:
-    proto_wrapper:
-      query_func: "k.NumPools"
-    cli:
-      cmd: "num-pools"
+  # NumPools:
+  #   proto_wrapper:
+  #     query_func: "k.NumPools"
+  #   cli:
+  #     cmd: "num-pools"
 
-  PoolParams:
-    proto_wrapper:
-      default_values:
-        Req.poolId: "1"
-      query_func: "k.PoolParams"
-    cli:
-      cmd: "pool-params"
+  # PoolParams:
+  #   proto_wrapper:
+  #     default_values:
+  #       Req.poolId: "1"
+  #     query_func: "k.PoolParams"
+  #   cli:
+  #     cmd: "pool-params"
 
-  TotalPoolLiquidity:
-    proto_wrapper:
-      default_values:
-        Req.poolId: "1"
-      query_func: "k.TotalPoolLiquidity"
-    cli:
-      cmd: "total-pool-liquidity"
+  # TotalPoolLiquidity:
+  #   proto_wrapper:
+  #     default_values:
+  #       Req.poolId: "1"
+  #     query_func: "k.TotalPoolLiquidity"
+  #   cli:
+  #     cmd: "total-pool-liquidity"
   
-  TotalShares:
-    proto_wrapper:
-      default_values:
-        Req.poolId: "1"
-      query_func: "k.TotalShares"
-    cli:
-      cmd: "total-share"
+  # TotalShares:
+  #   proto_wrapper:
+  #     default_values:
+  #       Req.poolId: "1"
+  #     query_func: "k.TotalShares"
+  #   cli:
+  #     cmd: "total-share"
 
-  SpotPrice:
-    proto_wrapper:
-      default_values:
-        Req.poolId: "1"
-        BaseAssetDenom: "uatom"
-        QuoteAssetDenom: "uosmo"
-      query_func: "k.SpotPrice"
-    cli:
-      cmd: "spot-price"
+  # SpotPrice:
+  #   proto_wrapper:
+  #     default_values:
+  #       Req.poolId: "1"
+  #       BaseAssetDenom: "uatom"
+  #       QuoteAssetDenom: "uosmo"
+  #     query_func: "k.SpotPrice"
+  #   cli:
+  #     cmd: "spot-price"
 
-  TotalLiquidity:
-    proto_wrapper:
-      query_func: "k.TotalLiquidity"
-    cli:
-      cmd: "total-liquidity"
+  # TotalLiquidity:
+  #   proto_wrapper:
+  #     query_func: "k.TotalLiquidity"
+  #   cli:
+  #     cmd: "total-liquidity"
 
-  EstimateSwapExactAmountIn:
-    proto_wrapper:
-      query_func: "k.EstimateSwapExactAmountIn"
-    cli:
-      cmd: "estimate-swap-exact-amount-in"
+  # EstimateSwapExactAmountIn:
+  #   proto_wrapper:
+  #     query_func: "k.EstimateSwapExactAmountIn"
+  #   cli:
+  #     cmd: "estimate-swap-exact-amount-in"
 
-  EstimateSwapExactAmountOut:
-    proto_wrapper:
-      query_func: "k.EstimateSwapExactAmountOut"
-    cli:
-      cmd: "estimate-swap-exact-amount-out"
+  # EstimateSwapExactAmountOut:
+  #   proto_wrapper:
+  #     query_func: "k.EstimateSwapExactAmountOut"
+  #   cli:
+  #     cmd: "estimate-swap-exact-amount-out"

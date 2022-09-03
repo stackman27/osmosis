@@ -21,92 +21,11 @@ type Querier struct {
 var _ queryproto.QueryServer = Querier{}
 
 func (q Querier) Pool(grpcCtx context.Context,
-	req *queryproto.QueryPoolRequest,
-) (*queryproto.QueryPoolResponse, error) {
+	req *queryproto.PoolRequest,
+) (*queryproto.PoolResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 	ctx := sdk.UnwrapSDKContext(grpcCtx)
 	return q.Q.Pool(ctx, *req)
-}
-func (q Querier) PoolParams(grpcCtx context.Context,
-	req *queryproto.QueryPoolParamsRequest,
-) (*queryproto.QueryPoolParamsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.PoolParams(ctx, *req)
-}
-func (q Querier) TotalShares(grpcCtx context.Context,
-	req *queryproto.QueryTotalSharesRequest,
-) (*queryproto.QueryTotalSharesResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.TotalShares(ctx, *req)
-}
-func (q Querier) EstimateSwapExactAmountIn(grpcCtx context.Context,
-	req *queryproto.QueryEstimateSwapExactAmountInRequest,
-) (*queryproto.QueryEstimateSwapExactAmountInResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.EstimateSwapExactAmountIn(ctx, *req)
-}
-func (q Querier) EstimateSwapExactAmountOut(grpcCtx context.Context,
-	req *queryproto.QueryEstimateSwapExactAmountOutRequest,
-) (*queryproto.QueryEstimateSwapExactAmountOutResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.EstimateSwapExactAmountOut(ctx, *req)
-}
-func (q Querier) Pools(grpcCtx context.Context,
-	req *queryproto.QueryPoolsRequest,
-) (*queryproto.QueryPoolsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.Pools(ctx, *req)
-}
-func (q Querier) NumPools(grpcCtx context.Context,
-	req *queryproto.QueryNumPoolsRequest,
-) (*queryproto.QueryNumPoolsResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.NumPools(ctx, *req)
-}
-func (q Querier) TotalPoolLiquidity(grpcCtx context.Context,
-	req *queryproto.QueryTotalPoolLiquidityRequest,
-) (*queryproto.QueryTotalPoolLiquidityResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.TotalPoolLiquidity(ctx, *req)
-}
-func (q Querier) SpotPrice(grpcCtx context.Context,
-	req *queryproto.QuerySpotPriceRequest,
-) (*queryproto.QuerySpotPriceResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.SpotPrice(ctx, *req)
-}
-func (q Querier) TotalLiquidity(grpcCtx context.Context,
-	req *queryproto.QueryTotalLiquidityRequest,
-) (*queryproto.QueryTotalLiquidityResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-	ctx := sdk.UnwrapSDKContext(grpcCtx)
-	return q.Q.TotalLiquidity(ctx, *req)
 }
