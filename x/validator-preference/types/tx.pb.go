@@ -9,7 +9,6 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/osmosis-labs/osmosis/v12/x/streamswap/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -31,7 +30,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgValidatorSetPreference is a set of list that holds validator-preference.
 type MsgValidatorSetPreference struct {
-	Preferences []types.ValidatorPreference `protobuf:"bytes,1,rep,name=preferences,proto3" json:"preferences"`
+	Preferences []ValidatorPreference `protobuf:"bytes,1,rep,name=preferences,proto3" json:"preferences"`
 }
 
 func (m *MsgValidatorSetPreference) Reset()         { *m = MsgValidatorSetPreference{} }
@@ -67,7 +66,7 @@ func (m *MsgValidatorSetPreference) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgValidatorSetPreference proto.InternalMessageInfo
 
-func (m *MsgValidatorSetPreference) GetPreferences() []types.ValidatorPreference {
+func (m *MsgValidatorSetPreference) GetPreferences() []ValidatorPreference {
 	if m != nil {
 		return m.Preferences
 	}
@@ -404,7 +403,7 @@ func (m *MsgValidatorSetPreference) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Preferences = append(m.Preferences, types.ValidatorPreference{})
+			m.Preferences = append(m.Preferences, ValidatorPreference{})
 			if err := m.Preferences[len(m.Preferences)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

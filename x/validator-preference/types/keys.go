@@ -6,4 +6,7 @@ const (
 
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
+
+	// KeyPrefixSuperfluidAsset defines prefix key for validator set.
+	KeyPrefixValidatorSet = []byte{0x01}
 )
