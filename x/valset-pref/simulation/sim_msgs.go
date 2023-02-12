@@ -2,8 +2,6 @@ package simulation
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -29,6 +27,7 @@ func RandomMsgSetValSetPreference(k valsetkeeper.Keeper, sim *osmosimtypes.SimCt
 }
 
 func RandomMsgDelegateToValSet(k valsetkeeper.Keeper, sim *osmosimtypes.SimCtx, ctx sdk.Context) (*types.MsgDelegateToValidatorSet, error) {
+	rand := sim.GetRand()
 	delegator := sim.RandomSimAccount()
 	// check if the delegator valset created
 	_, err := GetRandomDelegations(ctx, k, sim, delegator.Address)
@@ -51,6 +50,7 @@ func RandomMsgDelegateToValSet(k valsetkeeper.Keeper, sim *osmosimtypes.SimCtx, 
 
 func RandomMsgUnDelegateFromValSet(k valsetkeeper.Keeper, sim *osmosimtypes.SimCtx, ctx sdk.Context) (*types.MsgUndelegateFromValidatorSet, error) {
 	// random delegator account
+	rand := sim.GetRand()
 	delegator := sim.RandomSimAccount()
 	delAddr := delegator.Address
 
@@ -152,7 +152,7 @@ func RandomMsgReDelegateToValSet(k valsetkeeper.Keeper, sim *osmosimtypes.SimCtx
 }
 
 func RandomValidator(ctx sdk.Context, sim *osmosimtypes.SimCtx) *stakingtypes.Validator {
-	rand.Seed(time.Now().UnixNano())
+	rand := sim.GetRand()
 
 	validators := sim.StakingKeeper().GetAllValidators(ctx)
 	if len(validators) == 0 {
@@ -172,7 +172,7 @@ func GetRandomValAndWeights(ctx sdk.Context, k valsetkeeper.Keeper, sim *osmosim
 			return nil, fmt.Errorf("No validator")
 		}
 
-		randValue, err := RandomWeight(remainingWeight)
+		randValue, err := RandomWeight(sim, remainingWeight)
 		if err != nil {
 			return nil, fmt.Errorf("Error with random weights")
 		}
@@ -210,8 +210,9 @@ func GetRandomDelegations(ctx sdk.Context, k valsetkeeper.Keeper, sim *osmosimty
 }
 
 // Random float point from 0-1
-func RandomWeight(maxVal sdk.Dec) (sdk.Dec, error) {
-	rand.Seed(time.Now().UnixNano())
+func RandomWeight(sim *osmosimtypes.SimCtx, maxVal sdk.Dec) (sdk.Dec, error) {
+	rand := sim.GetRand()
+
 	val, err := maxVal.Float64()
 	if err != nil {
 		return sdk.Dec{}, err
